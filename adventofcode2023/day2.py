@@ -26,7 +26,7 @@ def is_game_possible(game: str):
     return game_id, True
 
 
-def day1(input):
+def q1(input):
     """
     Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
     .
@@ -53,7 +53,7 @@ def get_minimum(game: str):
     return minimum
 
 
-def day2(input):
+def q2(input):
     """
     The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together.
     The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively.
@@ -71,6 +71,6 @@ def day2(input):
 if __name__ == '__main__':
     f_path = Path() / "day2.txt"
     with open(f_path) as f:
-        print(day1(f))
+        print(q1(f))
         f.seek(0)
-        print(day2(f))
+        print(q2(f))
