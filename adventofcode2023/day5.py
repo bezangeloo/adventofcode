@@ -10,6 +10,39 @@ STAGES = ["seed-to-soil",
           "light-to-temperature",
           "temperature-to-humidity",
           "humidity-to-location"]
+EXAMPLE = (line for line in """seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4""".splitlines())
 
 
 def parse_input(input):
@@ -89,7 +122,7 @@ def transform_group(group, mapping: dict):
                 # ----|----------|------------|-------------------------|---------------------------->
                 #   source   group_start   source+mapping_length    group_start+group_length
                 transformed.append((group_start - source + dest, source + mapping_length - group_start))
-                to_transform.append((source + mapping_length, group_start + group_length - source - mapping_length))
+                to_transform.append((source + mapping_length + 1, group_start + group_length - source - mapping_length))
                 done = True
                 break
         if not done:
@@ -119,3 +152,5 @@ def q2(input):
 
 if __name__ == '__main__':
     entry_point(5, q1, q2)
+    #  print(q2(EXAMPLE))
+    #  weird bug made the answer for q2 to be the actual_answer+1. I guess I'll never know the reason :D
