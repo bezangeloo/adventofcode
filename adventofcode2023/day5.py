@@ -73,29 +73,48 @@ def q2_that_runs_forever(input):
 
 
 def transform_group(group, mapping: dict):
-    group_start, group_length = group
-    for (source, length), dest in mapping.items():
-        if source <= group_start <= source + length:
-            # we can transform this group, at least partially
-            if group_start +
-            return value - source + dest
-    return value
+    to_transform = [group]
+    transformed = []
+    while to_transform:
+        done = False
+        group_start, group_length = to_transform.pop()
+        for (source, mapping_length), dest in mapping.items():
+            if source <= group_start <= group_start + group_length <= source + mapping_length:
+                # we can transform this group
+                transformed.append((group_start - source + dest, group_length))
+                done = True
+                break
+            elif source <= group_start <= source + mapping_length < group_start + group_length:
+                # we can partially transform this group
+                # ----|----------|------------|-------------------------|---------------------------->
+                #   source   group_start   source+mapping_length    group_start+group_length
+                transformed.append((group_start - source + dest, source + mapping_length - group_start))
+                to_transform.append((source + mapping_length, group_start + group_length - source - mapping_length))
+                done = True
+                break
+        if not done:
+            # we cannot transform this group, so use identity
+            transformed.append((group_start, group_length))
+    return transformed
 
 
-def find_minimum_location_for_group(structures, seeds_supplier):
-    min_location = inf
-    for seed in seeds_supplier:
-        value = seed
-        for mapping_name in STAGES:
-            value = transform(value, structures[mapping_name])
-        min_location = min(min_location, value)
-    return min_location
+def find_minimum_location_for_group(structures, seeds_groups):
+    groups = list(seeds_groups)
+    transformed_groups = []
+    for mapping_name in STAGES:
+        while groups:
+            group = groups.pop()
+            transformed_groups.extend(transform_group(group, structures[mapping_name]))
+        groups, transformed_groups = transformed_groups, []
+    # we now have groups of locations in the groups' var, so simply get the minimum out of the start of each group
+    return min(groups, key=lambda g: g[0])
 
 
 def q2(input):
     structures = parse_input(input)
     seeds_pairs = zip(structures["seeds"][0::2], structures["seeds"][1::2])
     # instead of mapping each seed, map groups of seeds.
+    return find_minimum_location_for_group(structures, seeds_pairs)
 
 
 if __name__ == '__main__':
